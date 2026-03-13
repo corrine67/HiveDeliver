@@ -7,35 +7,49 @@ function MetricCard({ title, value, trend, icon }) {
   const displayed = isNumeric ? animated : value
 
   return (
-    <Card className="hover-lift" sx={{ height: '100%' }}>
-      <CardContent>
+    <Card className="hover-lift glow-card" sx={{ height: '100%', borderRadius: 3, overflow: 'visible' }}>
+      <CardContent sx={{ p: 2.5 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={1}>
-          <Stack spacing={0.8}>
-            <Typography variant="body2" color="text.secondary">
+          <Stack spacing={0.6}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: '0.68rem' }}
+            >
               {title}
             </Typography>
-            <Stack direction="row" alignItems="center" spacing={0.8}>
-              <Typography variant="h5">{displayed}</Typography>
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.1 }}>
+                {displayed}
+              </Typography>
               {isNumeric && (
                 <Box
                   sx={{
                     width: 8,
                     height: 8,
                     borderRadius: '50%',
-                    bgcolor: 'primary.main',
+                    bgcolor: '#22c55e',
                     flexShrink: 0,
                     animation: 'livePulse 2s ease-in-out infinite',
+                    boxShadow: '0 0 8px rgba(34,197,94,0.5)',
                   }}
                 />
               )}
             </Stack>
-            <Typography variant="caption" color="primary.main">
+            <Typography
+              variant="caption"
+              sx={{
+                fontWeight: 600,
+                color: 'primary.light',
+                fontSize: '0.72rem',
+              }}
+            >
               {trend}
             </Typography>
           </Stack>
-          <Typography variant="h5" color="primary.main">
+          <Box className="metric-icon-bg">
             {icon}
-          </Typography>
+          </Box>
         </Stack>
       </CardContent>
     </Card>

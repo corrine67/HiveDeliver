@@ -1,9 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
+/* ───── CSS Variables ───── */
 :root {
-  font-family: 'Outfit', 'Segoe UI', Arial, sans-serif;
-  color: #0f172a;
-  line-height: 1.5;
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(15, 118, 110, 0.08);
+  --glass-blur: 20px;
+  --glow-primary: rgba(20, 184, 166, 0.25);
+  --glow-secondary: rgba(14, 165, 233, 0.2);
+  --shadow-soft: 0 4px 24px rgba(15, 23, 42, 0.06);
+  --shadow-medium: 0 8px 32px rgba(15, 23, 42, 0.1);
+  --shadow-glow: 0 0 40px rgba(20, 184, 166, 0.15);
+  --transition-smooth: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Outfit', 'Inter', 'Segoe UI', sans-serif;
+  color: #0c1824;
+  line-height: 1.6;
   font-weight: 400;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -15,34 +25,85 @@
   box-sizing: border-box;
 }
 
+/* ───── Body Background ───── */
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 8% 12%, rgba(20, 184, 166, 0.14), transparent 32%),
-    radial-gradient(circle at 89% 10%, rgba(249, 115, 22, 0.15), transparent 26%),
-    linear-gradient(170deg, #f5fafc, #eef5f8);
+  background: #f0f6f8;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -20%;
+  width: 80vw;
+  height: 80vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(20, 184, 166, 0.07) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -40%;
+  right: -15%;
+  width: 70vw;
+  height: 70vw;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 #root {
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
 }
 
+/* ───── Hover Lift ───── */
 .hover-lift {
-  transition: transform 220ms ease, box-shadow 220ms ease;
+  transition: var(--transition-smooth);
 }
 
 .hover-lift:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 38px rgba(15, 23, 42, 0.12);
+  transform: translateY(-4px) scale(1.005);
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.12), var(--shadow-glow);
 }
 
+/* ───── Hero Gradient ───── */
 .hero-gradient {
   background:
-    linear-gradient(150deg, rgba(15, 118, 110, 0.96), rgba(2, 132, 199, 0.88)),
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.24), transparent 40%);
-  color: #f8feff;
+    linear-gradient(135deg, rgba(15, 118, 110, 0.97) 0%, rgba(2, 132, 199, 0.92) 50%, rgba(14, 165, 233, 0.88) 100%);
+  color: #f0fdfa;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-gradient::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -30%;
+  width: 80%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-gradient::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
 }
 
 .hero-gradient .MuiTypography-root {
@@ -50,59 +111,177 @@ body {
 }
 
 .hero-gradient .MuiTypography-colorTextSecondary {
-  color: rgba(242, 251, 255, 0.86);
+  color: rgba(224, 248, 255, 0.82);
 }
 
+/* ───── Drone Illustration ───── */
 .drone-illustration {
-  border: 1px solid rgba(229, 251, 255, 0.28);
-  background: rgba(240, 251, 255, 0.16);
-  border-radius: 16px;
-  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 16px;
 }
 
 .node-card {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   min-width: 104px;
-  border-radius: 14px;
-  background: rgba(242, 251, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  padding: 10px 6px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 14px 8px;
+  backdrop-filter: blur(8px);
+  transition: var(--transition-smooth);
+}
+
+.node-card:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .node-card svg {
-  font-size: 22px;
+  font-size: 24px;
 }
 
+/* ───── Floating Animation ───── */
 .floating {
-  animation: bob 2.2s ease-in-out infinite;
+  animation: float 3s ease-in-out infinite;
 }
 
-@keyframes bob {
-  0%,
-  100% {
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(1deg); }
+  66% { transform: translateY(-4px) rotate(-0.5deg); }
+}
+
+/* ───── Stagger Reveal Animation ───── */
+.reveal-up {
+  animation: revealUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes revealUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
     transform: translateY(0);
   }
-  50% {
-    transform: translateY(-7px);
+}
+
+.reveal-scale {
+  animation: revealScale 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes revealScale {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
-.legend-card {
-  background: #ffffff;
-  border: 1px solid #d7e8ef;
+/* Stagger delays */
+.delay-1 { animation-delay: 0.05s; }
+.delay-2 { animation-delay: 0.1s; }
+.delay-3 { animation-delay: 0.15s; }
+.delay-4 { animation-delay: 0.2s; }
+.delay-5 { animation-delay: 0.25s; }
+.delay-6 { animation-delay: 0.3s; }
+
+/* ───── Gradient Text ───── */
+.gradient-text {
+  background: linear-gradient(135deg, #0f766e 0%, #0ea5e9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ───── Glow Border Card ───── */
+.glow-card {
+  position: relative;
+}
+
+.glow-card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.3), rgba(14, 165, 233, 0.2), rgba(249, 115, 22, 0.15));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glow-card:hover::before {
+  opacity: 1;
+}
+
+/* ───── Metric Card Icon Background ───── */
+.metric-icon-bg {
+  width: 48px;
+  height: 48px;
   border-radius: 14px;
-  padding: 14px;
-  color: #0f172a;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.12), rgba(14, 165, 233, 0.08));
+  color: #0f766e;
+  border: 1px solid rgba(20, 184, 166, 0.15);
+}
+
+/* ───── Status Chip Styles ───── */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.status-chip-delivering {
+  background: rgba(14, 165, 233, 0.12);
+  color: #0284c7;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.status-chip-waiting {
+  background: rgba(234, 179, 8, 0.12);
+  color: #a16207;
+  border: 1px solid rgba(234, 179, 8, 0.2);
+}
+
+.status-chip-delivered {
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+/* ───── Legend Card ───── */
+.legend-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 253, 255, 0.8));
+  border: 1px solid rgba(15, 118, 110, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  color: #0c1824;
+  backdrop-filter: blur(12px);
 }
 
 .legend-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .legend-row:last-child {
@@ -110,95 +289,199 @@ body {
 }
 
 .legend-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.legend-warehouse {
-  background: #0f766e;
-}
+.legend-warehouse { background: linear-gradient(135deg, #0f766e, #14b8a6); }
+.legend-drone { background: linear-gradient(135deg, #0284c7, #0ea5e9); }
+.legend-point { background: linear-gradient(135deg, #ea580c, #f97316); }
+.legend-rural { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+.legend-critical { background: linear-gradient(135deg, #dc2626, #ef4444); }
+.legend-nofly { background: linear-gradient(135deg, #ef4444, #f87171); opacity: 0.8; }
 
-.legend-drone {
-  background: #0284c7;
-}
-
-.legend-point {
-  background: #f97316;
-}
-
+/* ───── Map Pins ───── */
 .map-div-icon {
   background: transparent;
   border: none;
 }
 
 .map-pin {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   color: #ffffff;
   display: grid;
   place-items: center;
   font-size: 12px;
-  font-weight: 700;
-  border: 2px solid rgba(255, 255, 255, 0.88);
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.28);
+  font-weight: 800;
+  border: 2.5px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease;
+}
+
+.map-pin:hover {
+  transform: scale(1.2);
 }
 
 .map-pin-warehouse {
-  background: #0f766e;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
+  box-shadow: 0 4px 16px rgba(15, 118, 110, 0.4);
 }
 
 .map-pin-drone {
-  background: #0284c7;
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
 }
 
 .map-pin-point {
-  background: #f97316;
+  background: linear-gradient(135deg, #ea580c, #fb923c);
 }
 
+.map-pin-rural {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.map-pin-critical {
+  background: linear-gradient(135deg, #dc2626, #f87171);
+  animation: criticalPulse 1.2s ease-in-out infinite;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+@keyframes criticalPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5), 0 4px 12px rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0), 0 4px 12px rgba(239, 68, 68, 0.4); }
+}
+
+/* ───── Status Line ───── */
 .status-line {
-  background: #f8fbfc;
-  border: 1px solid #dce8ee;
-  border-radius: 10px;
-  padding: 8px 10px;
+  background: linear-gradient(135deg, rgba(240, 246, 248, 0.9), rgba(248, 253, 255, 0.8));
+  border: 1px solid rgba(15, 118, 110, 0.06);
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: var(--transition-smooth);
 }
 
+.status-line:hover {
+  border-color: rgba(15, 118, 110, 0.15);
+  background: linear-gradient(135deg, rgba(240, 246, 248, 1), rgba(248, 253, 255, 0.95));
+}
+
+/* ───── Pulse Animations ───── */
 .pulse-dot {
   animation: pulse 2.4s ease-in-out infinite;
   transform-origin: center;
 }
 
 @keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.78;
-    transform: scale(1.08);
-  }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.78; transform: scale(1.08); }
 }
 
 @keyframes livePulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.4;
-    transform: scale(1.5);
-  }
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.5); }
 }
 
+/* ───── Shimmer Effect ───── */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* ───── Heatmap ───── */
+.heatmap-gradient-bar {
+  height: 14px;
+  border-radius: 7px;
+  background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #7fff00, #00ff00);
+  margin: 6px 0 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ───── Drone Tooltip ───── */
+.drone-tooltip .leaflet-tooltip-content {
+  font-family: 'Outfit', 'Segoe UI', Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ───── No-fly Zone Label ───── */
+.nofly-label {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px dashed #ef4444;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #ef4444;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+}
+
+/* ───── Section Divider ───── */
+.section-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(20, 184, 166, 0.2), transparent);
+  border: none;
+  margin: 8px 0;
+}
+
+/* ───── Animated Grid Background ───── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(20, 184, 166, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20, 184, 166, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ───── Responsive ───── */
 @media (max-width: 700px) {
   .node-card {
     min-width: 84px;
   }
+}
+
+/* ───── Scrollbar Styling ───── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 118, 110, 0.2);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 118, 110, 0.35);
 }
