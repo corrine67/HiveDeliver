@@ -197,6 +197,67 @@ body {
   }
 }
 
+/* Rural destination marker */
+.map-pin-rural {
+  background: #a855f7;
+}
+
+/* Critical priority marker */
+.map-pin-critical {
+  background: #ef4444;
+  animation: criticalPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes criticalPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+}
+
+/* Legend icons for new marker types */
+.legend-rural {
+  background: #a855f7;
+}
+
+.legend-critical {
+  background: #ef4444;
+}
+
+.legend-nofly {
+  background: #ef4444;
+  opacity: 0.7;
+}
+
+/* Heatmap gradient bar for legend */
+.heatmap-gradient-bar {
+  height: 14px;
+  border-radius: 7px;
+  background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #7fff00, #00ff00);
+  margin: 6px 0 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Drone tooltip styling */
+.drone-tooltip .leaflet-tooltip-content {
+  font-family: 'Outfit', 'Segoe UI', Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* No-fly zone label */
+.nofly-label {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px dashed #ef4444;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 11px;
+  color: #ef4444;
+  font-weight: 600;
+}
+
 @media (max-width: 700px) {
   .node-card {
     min-width: 84px;
