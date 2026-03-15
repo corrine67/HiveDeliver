@@ -16,11 +16,13 @@ import {
 } from 'recharts'
 import { Card, CardContent, Grid, Stack, Typography, Box, Chip } from '@mui/material'
 import PageHeader from '../components/PageHeader.jsx'
+import EnvironmentalImpactCard from '../components/EnvironmentalImpactCard.jsx'
 import {
   deliveriesPerDay,
   deliveryTimeDistribution,
   utilizationRate,
 } from '../data/mockData.js'
+import { environmentalImpactData } from '../data/operationsData.js'
 
 const utilizationColors = ['#0ea5e9', '#14b8a6', '#f97316']
 
@@ -177,7 +179,7 @@ function AnalyticsPage() {
           </Box>
         </Grid>
 
-        <Grid size={{ xs: 12 }}>
+        <Grid size={{ xs: 12, lg: 8 }}>
           <Box className="reveal-up delay-3">
             <Card className="hover-lift glow-card" sx={{ borderRadius: 3 }}>
               <CardContent sx={{ p: 2.5 }}>
@@ -222,6 +224,12 @@ function AnalyticsPage() {
                 </ResponsiveContainer>
               </CardContent>
             </Card>
+          </Box>
+        </Grid>
+
+        <Grid size={{ xs: 12, lg: 4 }}>
+          <Box className="reveal-up delay-4">
+            <EnvironmentalImpactCard impact={environmentalImpactData} />
           </Box>
         </Grid>
       </Grid>

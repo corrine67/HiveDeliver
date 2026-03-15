@@ -24,6 +24,7 @@ import TranslateIcon from '@mui/icons-material/Translate'
 import Sidebar, { drawerWidth } from './Sidebar.jsx'
 import { useColorMode } from '../ColorModeContext.jsx'
 import Chatbot from './Chatbot.jsx'
+import NotificationPanel from './NotificationPanel.jsx'
 import { FaRobot } from 'react-icons/fa'
 import { languages } from '../i18n/i18n.js'
 
@@ -32,6 +33,9 @@ const pathToKey = {
   '/dashboard': 'dashboard',
   '/map': 'map',
   '/order': 'order',
+  '/history': 'history',
+  '/addresses': 'addresses',
+  '/notifications': 'notifications',
   '/intelligence': 'intelligence',
   '/analytics': 'analytics',
   '/fleet': 'fleet',
@@ -134,6 +138,8 @@ function AppShell({ children }) {
               />
             }
           />
+
+          <NotificationPanel />
 
           {/* Language Selector */}
           <Tooltip title={t('common.language')}>

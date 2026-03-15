@@ -7,7 +7,9 @@ import { GiDeliveryDrone } from 'react-icons/gi'
 import MetricCard from '../components/MetricCard.jsx'
 import PageHeader from '../components/PageHeader.jsx'
 import DeliveryTable from '../components/DeliveryTable.jsx'
+import WeatherStatusCard from '../components/WeatherStatusCard.jsx'
 import { deliveries } from '../data/mockData.js'
+import { weatherScenarios } from '../data/operationsData.js'
 
 const metricIcons = [
   <FaBoxesStacked key="deliveries" />,
@@ -32,6 +34,7 @@ function DashboardPage() {
   ]
 
   const [metrics, setMetrics] = useState(initialMetrics)
+  const [weatherIndex, setWeatherIndex] = useState(0)
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -47,6 +50,14 @@ function DashboardPage() {
     return () => clearInterval(timer)
   }, [])
 
+  useEffect(() => {
+    const weatherTimer = setInterval(() => {
+      setWeatherIndex((prev) => (prev + 1) % weatherScenarios.length)
+    }, 9000)
+
+    return () => clearInterval(weatherTimer)
+  }, [])
+
   return (
     <Stack spacing={2.5}>
       <Box className="reveal-up">
@@ -57,9 +68,17 @@ function DashboardPage() {
       </Box>
 
       <Grid container spacing={1.5}>
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Box className="reveal-up delay-1">
+            <WeatherStatusCard weather={weatherScenarios[weatherIndex]} />
+          </Box>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={1.5}>
         {metrics.map((metric, index) => (
           <Grid key={metric.labelKey} size={{ xs: 12, sm: 6, lg: 3 }}>
-            <Box className={`reveal-up delay-${index + 1}`}>
+            <Box className={`reveal-up delay-${index + 2}`}>
               <MetricCard
                 title={t(metric.labelKey)}
                 value={metric.value}
@@ -71,7 +90,7 @@ function DashboardPage() {
         ))}
       </Grid>
 
-      <Box className="reveal-up delay-5">
+      <Box className="reveal-up delay-6">
         <Typography variant="h6" sx={{ mb: 1, fontWeight: 700 }}>
           {t('dashboard.deliveryTable')}
         </Typography>

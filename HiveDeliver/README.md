@@ -1,12 +1,12 @@
 # HiveDeliver Frontend App
 
-This folder contains the React + Vite frontend for the HiveDeliver hackathon demo.
+This folder contains the React + Vite frontend for HiveDeliver.
 
-## Run Locally
+## Run
 
 ```bash
 npm install
-npm run dev
+npm run dev -- --host
 ```
 
 ## Build
@@ -21,13 +21,17 @@ npm run build
 npm run lint
 ```
 
-## Features
+## Core Features
 
-- Responsive dashboard layout with sidebar navigation
-- Dark/light mode toggle
-- Live dashboard counters and simulated activity updates
-- React Leaflet live drone map simulation
-- Recharts analytics panels
-- Delivery order simulation and fleet management views
+- Role-aware authenticated app layout
+- Multi-language UI (`en`, `ms`, `ta`, `zh`)
+- Live Drone Map with:
+	- no-fly zone-aware routing
+	- weather indicators and route adaptation
+	- drone communication mesh lines
+	- animated swarm link traffic
+	- right-side alert/legend/priority cards
+	- swarm status panel below map
+- Dashboard, order flow, history, saved addresses, notifications, analytics, and fleet views
 
 All data is mock data for frontend demonstration only.

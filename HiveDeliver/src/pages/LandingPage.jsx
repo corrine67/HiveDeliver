@@ -1,19 +1,139 @@
 import { useNavigate } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
 import { Box, Button, Card, CardContent, Grid, Stack, Typography, Chip } from '@mui/material'
+import { useTheme } from '@mui/material/styles'
+import { useTranslation } from 'react-i18next'
 import { FaBoxOpen, FaWarehouse, FaArrowRight, FaShieldHalved, FaBolt, FaRoute } from 'react-icons/fa6'
 import { GiDeliveryDrone } from 'react-icons/gi'
 import { useAuth } from '../contexts/AuthContext.jsx'
-import { benefits } from '../data/mockData.js'
 
 function LandingPage() {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
+  const theme = useTheme()
+  const { t } = useTranslation()
+  const isDarkMode = theme.palette.mode === 'dark'
+  const brandLogo = '/hivedeliver-logo.svg'
+
+  const scrollToSection = (sectionId) => {
+    const target = document.getElementById(sectionId)
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  const localizedBenefits = [
+    {
+      title: t('benefits.fasterTitle'),
+      description: t('benefits.fasterDesc'),
+    },
+    {
+      title: t('benefits.lowerCostTitle'),
+      description: t('benefits.lowerCostDesc'),
+    },
+    {
+      title: t('benefits.aiSwarmTitle'),
+      description: t('benefits.aiSwarmDesc'),
+    },
+    {
+      title: t('benefits.smartRouteTitle'),
+      description: t('benefits.smartRouteDesc'),
+    },
+    {
+      title: t('benefits.resilientOpsTitle'),
+      description: t('benefits.resilientOpsDesc'),
+    },
+    {
+      title: t('benefits.ecoSmartTitle'),
+      description: t('benefits.ecoSmartDesc'),
+    },
+  ]
+
+  const functionHighlights = [
+    {
+      key: 'live-routing',
+      icon: <FaRoute size={13} />,
+      label: t('landing.functionLiveRouting'),
+    },
+    {
+      key: 'smart-priority',
+      icon: <FaArrowRight size={13} />,
+      label: t('landing.functionSmartPriority'),
+    },
+    {
+      key: 'flight-safety',
+      icon: <FaShieldHalved size={13} />,
+      label: t('landing.functionSafety'),
+    },
+    {
+      key: 'insights',
+      icon: <FaBolt size={13} />,
+      label: t('landing.functionInstantInsights'),
+    },
+  ]
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          px: { xs: 2, md: 4 },
+          py: 1.5,
+          backdropFilter: 'blur(14px)',
+          backgroundColor: isDarkMode ? 'rgba(15, 23, 42, 0.72)' : 'rgba(255, 255, 255, 0.78)',
+          borderBottom: isDarkMode ? '1px solid rgba(148, 163, 184, 0.16)' : '1px solid rgba(15, 118, 110, 0.08)',
+        }}
+      >
+        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
+          <Stack direction="row" spacing={1.2} alignItems="center" sx={{ cursor: 'pointer' }} onClick={() => navigate('/home')}>
+            <Box
+              component="img"
+              src={brandLogo}
+              alt="HiveDeliver logo"
+              sx={{
+                width: 40,
+                height: 40,
+                objectFit: 'cover',
+                borderRadius: '10px',
+                boxShadow: '0 10px 24px rgba(15, 118, 110, 0.24)',
+              }}
+            />
+            <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>
+              HiveDeliver
+            </Typography>
+          </Stack>
+
+          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+            <Button onClick={() => scrollToSection('landing-top')} sx={{ textTransform: 'none', fontWeight: 700 }}>
+              {t('landing.home')}
+            </Button>
+            <Button onClick={() => scrollToSection('landing-features')} sx={{ textTransform: 'none', fontWeight: 700 }}>
+              {t('landing.features')}
+            </Button>
+            <Button onClick={() => navigate('/login')} sx={{ textTransform: 'none', fontWeight: 700 }}>
+              {t('landing.signIn')}
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => navigate('/signup')}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 700,
+                borderRadius: '999px',
+                px: 2.2,
+                background: 'linear-gradient(135deg, #0f766e, #14b8a6)',
+              }}
+            >
+              {t('landing.signUp')}
+            </Button>
+          </Stack>
+        </Stack>
+      </Box>
+
       {/* Hero Section - Apple Style */}
       <Box
+        id="landing-top"
         sx={{
           flex: 1,
           display: 'flex',
@@ -28,23 +148,18 @@ function LandingPage() {
       >
         {/* Logo/Icon */}
         <Box
+          component="img"
+          src={brandLogo}
+          alt="HiveDeliver logo"
           sx={{
-            width: 80,
-            height: 80,
-            borderRadius: '20px',
-            background: 'linear-gradient(135deg, #0f766e, #14b8a6)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 40,
-            color: 'white',
-            fontWeight: 700,
+            width: 104,
+            height: 104,
+            borderRadius: '24px',
+            objectFit: 'cover',
             mb: 3,
             boxShadow: '0 20px 50px rgba(15, 118, 110, 0.25)',
           }}
-        >
-          H
-        </Box>
+        />
 
         {/* Main Headline */}
         <Typography
@@ -76,7 +191,7 @@ function LandingPage() {
             color: 'text.primary',
           }}
         >
-          AI-Powered Autonomous Drone Delivery
+          {t('landing.heroTitle')}
         </Typography>
 
         {/* Description */}
@@ -90,8 +205,7 @@ function LandingPage() {
             lineHeight: 1.6,
           }}
         >
-          Experience the future of last-mile logistics. Our intelligent drone swarms deliver packages 
-          to SMEs with unprecedented speed, efficiency, and reliability. Built for scale.
+          {t('landing.heroDesc')}
         </Typography>
 
         {/* CTA Buttons */}
@@ -104,7 +218,7 @@ function LandingPage() {
             <Button
               variant="contained"
               size="large"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate('/signup')}
               sx={{
                 px: 4,
                 py: 1.5,
@@ -121,12 +235,12 @@ function LandingPage() {
                 },
               }}
             >
-              Sign In
+              {t('landing.getStarted')}
             </Button>
             <Button
               variant="outlined"
               size="large"
-              onClick={() => navigate('/register')}
+              onClick={() => navigate('/login')}
               sx={{
                 px: 4,
                 py: 1.5,
@@ -145,7 +259,7 @@ function LandingPage() {
                 },
               }}
             >
-              Create Account
+              {t('landing.signIn')}
             </Button>
           </Stack>
         )}
@@ -165,30 +279,30 @@ function LandingPage() {
             <Box sx={{ textAlign: 'center', opacity: 0.8 }}>
               <FaWarehouse style={{ fontSize: 32, color: '#0f766e', marginBottom: 8 }} />
               <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Warehouse
+                {t('landing.warehouse')}
               </Typography>
             </Box>
             <Box sx={{ textAlign: 'center' }}>
               <GiDeliveryDrone style={{ fontSize: 40, color: '#14b8a6', marginBottom: 8 }} />
               <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Smart Swarm
+                {t('landing.droneSwarm')}
               </Typography>
             </Box>
             <Box sx={{ textAlign: 'center', opacity: 0.8 }}>
               <FaBoxOpen style={{ fontSize: 32, color: '#0f766e', marginBottom: 8 }} />
               <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>
-                Delivery
+                {t('landing.packages')}
               </Typography>
             </Box>
           </Stack>
           <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-            Real-time autonomous coordination from warehouse to destination
+            {t('landing.illustrationDesc')}
           </Typography>
         </Box>
       </Box>
 
       {/* Benefits Section */}
-      <Box sx={{ py: { xs: 4, md: 6 }, px: { xs: 2, md: 4 } }}>
+      <Box id="landing-features" sx={{ py: { xs: 4, md: 6 }, px: { xs: 2, md: 4 } }}>
         <Typography
           variant="h4"
           sx={{
@@ -198,38 +312,87 @@ function LandingPage() {
             fontSize: { xs: '1.5rem', md: '2rem' },
           }}
         >
-          Why Choose HiveDeliver
+          {t('landing.whyTitlePlain')}
         </Typography>
+        <Typography
+          variant="body1"
+          sx={{
+            textAlign: 'center',
+            mb: 2.2,
+            color: 'text.secondary',
+            maxWidth: 760,
+            mx: 'auto',
+            lineHeight: 1.75,
+          }}
+        >
+          {t('landing.whyFunctionTitle')}
+        </Typography>
+
+        <Stack
+          direction="row"
+          spacing={1}
+          useFlexGap
+          flexWrap="wrap"
+          justifyContent="center"
+          sx={{ mb: 3.2 }}
+        >
+          {functionHighlights.map((feature) => (
+            <Chip
+              key={feature.key}
+              icon={feature.icon}
+              label={feature.label}
+              sx={{
+                borderRadius: '999px',
+                fontWeight: 700,
+                px: 0.5,
+                bgcolor: isDarkMode ? 'rgba(15, 118, 110, 0.2)' : 'rgba(20, 184, 166, 0.14)',
+                color: isDarkMode ? 'rgba(226, 232, 240, 0.96)' : 'rgba(15, 23, 42, 0.9)',
+                border: isDarkMode ? '1px solid rgba(45, 212, 191, 0.24)' : '1px solid rgba(13, 148, 136, 0.24)',
+              }}
+            />
+          ))}
+        </Stack>
+
         <Grid container spacing={3}>
-          {benefits.map((benefit) => (
+          {localizedBenefits.map((benefit) => (
             <Grid key={benefit.title} size={{ xs: 12, sm: 6, md: 4 }}>
               <Card
                 className="hover-lift"
                 sx={{
                   height: '100%',
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.4))',
+                  background: isDarkMode
+                    ? 'linear-gradient(135deg, rgba(15, 23, 42, 0.88), rgba(30, 41, 59, 0.78))'
+                    : 'linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.4))',
                   backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(15, 118, 110, 0.1)',
+                  border: isDarkMode
+                    ? '1px solid rgba(148, 163, 184, 0.25)'
+                    : '1px solid rgba(15, 118, 110, 0.1)',
                   transition: 'all 300ms ease',
                   '&:hover': {
                     borderColor: '#14b8a6',
                     boxShadow: '0 15px 40px rgba(15, 118, 110, 0.15)',
                   },
                 }}
-              />
-              <Typography variant="h3" sx={{ mb: 1.5, lineHeight: 1.1, fontSize: { xs: '1.8rem', md: '2.6rem' } }}>
-                {t('landing.heroTitle')}
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ mb: 3, maxWidth: 560, opacity: 0.85, lineHeight: 1.7, fontSize: '1.02rem' }}
               >
                 <CardContent>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.8 }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 700,
+                      mb: 0.8,
+                      color: isDarkMode ? 'rgba(248, 250, 252, 0.96)' : 'text.primary',
+                    }}
+                  >
                     {benefit.title}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
-                    {t(`benefits.${key}Desc`)}
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      lineHeight: 1.7,
+                      color: isDarkMode ? 'rgba(226, 232, 240, 0.92)' : 'text.secondary',
+                    }}
+                  >
+                    {benefit.description}
                   </Typography>
                 </CardContent>
               </Card>

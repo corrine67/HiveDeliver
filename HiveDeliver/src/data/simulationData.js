@@ -52,16 +52,148 @@ export const noFlyZones = [
   },
 ]
 
-// Generate path with waypoints between two points, optionally avoiding no-fly zones
-function generatePath(start, end, numWaypoints = 4) {
-  const path = []
-  for (let i = 0; i <= numWaypoints; i++) {
-    const t = i / numWaypoints
-    const lat = start[0] + (end[0] - start[0]) * t + (Math.random() - 0.5) * 0.002 * (i > 0 && i < numWaypoints ? 1 : 0)
-    const lng = start[1] + (end[1] - start[1]) * t + (Math.random() - 0.5) * 0.002 * (i > 0 && i < numWaypoints ? 1 : 0)
-    path.push([lat, lng])
+const METERS_PER_DEGREE_LAT = 111320
+const NO_FLY_CLEARANCE_METERS = 80
+const MAX_DETOUR_INSERTIONS = 12
+const DETOUR_RING_SAMPLES = 16
+const DETOUR_BUFFER_METERS = 40
+export const SWARM_COMMUNICATION_RANGE_METERS = 550
+
+function metersPerDegreeLng(lat) {
+  return METERS_PER_DEGREE_LAT * Math.cos((lat * Math.PI) / 180)
+}
+
+function toXY(point, refLat) {
+  return {
+    x: point[1] * metersPerDegreeLng(refLat),
+    y: point[0] * METERS_PER_DEGREE_LAT,
   }
-  // Ensure exact start and end
+}
+
+function toLatLng(point, refLat) {
+  return [
+    point.y / METERS_PER_DEGREE_LAT,
+    point.x / metersPerDegreeLng(refLat),
+  ]
+}
+
+export function distanceMeters(a, b) {
+  const refLat = (a[0] + b[0]) / 2
+  const ax = toXY(a, refLat)
+  const bx = toXY(b, refLat)
+  const dx = bx.x - ax.x
+  const dy = bx.y - ax.y
+  return Math.hypot(dx, dy)
+}
+
+function distanceToSegmentMeters(point, segStart, segEnd) {
+  const refLat = (point[0] + segStart[0] + segEnd[0]) / 3
+  const p = toXY(point, refLat)
+  const a = toXY(segStart, refLat)
+  const b = toXY(segEnd, refLat)
+  const abx = b.x - a.x
+  const aby = b.y - a.y
+  const abLenSq = abx * abx + aby * aby
+
+  if (abLenSq === 0) {
+    return Math.hypot(p.x - a.x, p.y - a.y)
+  }
+
+  const apx = p.x - a.x
+  const apy = p.y - a.y
+  const t = Math.max(0, Math.min(1, (apx * abx + apy * aby) / abLenSq))
+  const closestX = a.x + abx * t
+  const closestY = a.y + aby * t
+  return Math.hypot(p.x - closestX, p.y - closestY)
+}
+
+function segmentHitsZone(segStart, segEnd, zone, clearanceMeters = NO_FLY_CLEARANCE_METERS) {
+  const avoidRadius = zone.radius + clearanceMeters
+  const distance = distanceToSegmentMeters(zone.center, segStart, segEnd)
+  return distance < avoidRadius
+}
+
+function findBlockingZone(segStart, segEnd, zones, clearanceMeters = NO_FLY_CLEARANCE_METERS) {
+  return zones.find((zone) => segmentHitsZone(segStart, segEnd, zone, clearanceMeters)) || null
+}
+
+function buildDetourWaypoint(segStart, segEnd, zone, zones, clearanceMeters = NO_FLY_CLEARANCE_METERS) {
+  const refLat = zone.center[0]
+  const centerXY = toXY(zone.center, refLat)
+  const ringRadius = zone.radius + clearanceMeters + DETOUR_BUFFER_METERS
+
+  const candidates = []
+  for (let i = 0; i < DETOUR_RING_SAMPLES; i++) {
+    const angle = (i / DETOUR_RING_SAMPLES) * Math.PI * 2
+    const pointXY = {
+      x: centerXY.x + Math.cos(angle) * ringRadius,
+      y: centerXY.y + Math.sin(angle) * ringRadius,
+    }
+    const waypoint = toLatLng(pointXY, refLat)
+    candidates.push(waypoint)
+  }
+
+  const scored = candidates.map((waypoint) => {
+    const firstZone = findBlockingZone(segStart, waypoint, zones, clearanceMeters)
+    const secondZone = findBlockingZone(waypoint, segEnd, zones, clearanceMeters)
+    const blockCount = (firstZone ? 1 : 0) + (secondZone ? 1 : 0)
+    const length = distanceMeters(segStart, waypoint) + distanceMeters(waypoint, segEnd)
+    return { waypoint, blockCount, length }
+  })
+
+  scored.sort((left, right) => {
+    if (left.blockCount !== right.blockCount) return left.blockCount - right.blockCount
+    return left.length - right.length
+  })
+
+  return scored[0]?.waypoint || null
+}
+
+function buildSafeCorridor(start, end, zones, clearanceMeters = NO_FLY_CLEARANCE_METERS) {
+  const corridor = [[...start], [...end]]
+
+  for (let attempt = 0; attempt < MAX_DETOUR_INSERTIONS; attempt++) {
+    let inserted = false
+
+    for (let i = 0; i < corridor.length - 1; i++) {
+      const segStart = corridor[i]
+      const segEnd = corridor[i + 1]
+      const blockingZone = findBlockingZone(segStart, segEnd, zones, clearanceMeters)
+
+      if (!blockingZone) continue
+
+      const detour = buildDetourWaypoint(segStart, segEnd, blockingZone, zones, clearanceMeters)
+      if (!detour) continue
+
+      corridor.splice(i + 1, 0, detour)
+      inserted = true
+      break
+    }
+
+    if (!inserted) break
+  }
+
+  return corridor
+}
+
+// Generate path with waypoints between two points while detouring around no-fly zones.
+function generatePath(start, end, zones = [], numWaypoints = 6) {
+  const corridor = buildSafeCorridor(start, end, zones)
+  const path = [[...start]]
+  const segmentCount = Math.max(1, corridor.length - 1)
+  const stepsPerSegment = Math.max(1, Math.ceil(numWaypoints / segmentCount))
+
+  for (let i = 0; i < corridor.length - 1; i++) {
+    const from = corridor[i]
+    const to = corridor[i + 1]
+    for (let step = 1; step <= stepsPerSegment; step++) {
+      const t = step / stepsPerSegment
+      const lat = from[0] + (to[0] - from[0]) * t
+      const lng = from[1] + (to[1] - from[1]) * t
+      path.push([lat, lng])
+    }
+  }
+
   path[0] = [...start]
   path[path.length - 1] = [...end]
   return path
@@ -76,6 +208,110 @@ const droneColors = [
 
 // Build all destinations combined
 export const allDestinations = [...urbanDestinations, ...ruralDestinations]
+
+// Location-based weather conditions for each delivery area
+export const locationWeatherData = [
+  {
+    destinationId: 'U1',
+    location: 'Downtown SME Hub',
+    coordinates: [1.3078, 103.8512],
+    windSpeed: '12 km/h',
+    rain: 'Light',
+    temperature: '29°C',
+    flightSafety: 'Safe',
+    messageKey: 'map.routeNormalWeather',
+  },
+  {
+    destinationId: 'U2',
+    location: 'Harbor Retail Block',
+    coordinates: [1.2925, 103.8311],
+    windSpeed: '22 km/h',
+    rain: 'Moderate',
+    temperature: '28°C',
+    flightSafety: 'Caution',
+    messageKey: 'map.routeAdjustedCaution',
+  },
+  {
+    destinationId: 'U3',
+    location: 'North Innovation Park',
+    coordinates: [1.3191, 103.8473],
+    windSpeed: '15 km/h',
+    rain: 'Light',
+    temperature: '30°C',
+    flightSafety: 'Safe',
+    messageKey: 'map.routeNormalWeather',
+  },
+  {
+    destinationId: 'U4',
+    location: 'Tech Park Unit 7',
+    coordinates: [1.3055, 103.8555],
+    windSpeed: '18 km/h',
+    rain: 'Light',
+    temperature: '29°C',
+    flightSafety: 'Safe',
+    messageKey: 'map.routeNormalWeather',
+  },
+  {
+    destinationId: 'U5',
+    location: 'Market Street Kiosk',
+    coordinates: [1.2988, 103.8488],
+    windSpeed: '26 km/h',
+    rain: 'Moderate',
+    temperature: '27°C',
+    flightSafety: 'Caution',
+    messageKey: 'map.routeAdjustedCaution',
+  },
+  {
+    destinationId: 'R1',
+    location: 'Hillside Village Clinic',
+    coordinates: [1.3280, 103.8250],
+    windSpeed: '20 km/h',
+    rain: 'Moderate',
+    temperature: '26°C',
+    flightSafety: 'Caution',
+    messageKey: 'map.routeAdjustedCaution',
+  },
+  {
+    destinationId: 'R2',
+    location: 'Remote Farm Supply Depot',
+    coordinates: [1.2820, 103.8600],
+    windSpeed: '35 km/h',
+    rain: 'Heavy',
+    temperature: '27°C',
+    flightSafety: 'Unsafe',
+    messageKey: 'map.routeAdjustedSevere',
+  },
+  {
+    destinationId: 'R3',
+    location: 'Coastal Fishing Community',
+    coordinates: [1.2750, 103.8350],
+    windSpeed: '31 km/h',
+    rain: 'Heavy',
+    temperature: '26°C',
+    flightSafety: 'Unsafe',
+    messageKey: 'map.routeAdjustedSevere',
+  },
+  {
+    destinationId: 'R4',
+    location: 'Mountain Research Station',
+    coordinates: [1.3320, 103.8580],
+    windSpeed: '24 km/h',
+    rain: 'Moderate',
+    temperature: '25°C',
+    flightSafety: 'Caution',
+    messageKey: 'map.routeAdjustedCaution',
+  },
+  {
+    destinationId: 'R5',
+    location: 'Island Medical Outpost',
+    coordinates: [1.2700, 103.8500],
+    windSpeed: '34 km/h',
+    rain: 'Heavy',
+    temperature: '25°C',
+    flightSafety: 'Unsafe',
+    messageKey: 'map.routeAdjustedSevere',
+  },
+]
 
 // Generate initial drone fleet
 export function generateDroneFleet(count = 8) {
@@ -117,7 +353,7 @@ export function assignRoutes(drones, destinations, priorityMode = false) {
   for (let i = 0; i < activeDrones.length && i < sortedDests.length; i++) {
     const drone = activeDrones[i]
     const dest = sortedDests[i]
-    const path = generatePath(WAREHOUSE.position, dest.position, 5)
+    const path = generatePath(WAREHOUSE.position, dest.position, noFlyZones, 6)
 
     routes.push({
       droneId: drone.droneId,

@@ -31,7 +31,6 @@ export function AuthProvider({ children }) {
 
   const register = async (info) => {
     const registered = authRegister(info)
-    setUser(registered)
     return registered
   }
 

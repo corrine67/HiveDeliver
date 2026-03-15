@@ -49,7 +49,13 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       await register({ email, password, role })
-      navigate(defaultRoute, { replace: true })
+      navigate('/login', {
+        replace: true,
+        state: {
+          registrationSuccess: true,
+          registeredEmail: email,
+        },
+      })
     } catch (err) {
       setError(err.message ?? 'Unable to create an account.')
     } finally {

@@ -21,6 +21,7 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from?.pathname || defaultRoute
+  const registrationSuccess = Boolean(location.state?.registrationSuccess)
 
   useEffect(() => {
     if (user) {
@@ -28,7 +29,7 @@ export default function LoginPage() {
     }
   }, [defaultRoute, navigate, user])
 
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(location.state?.registeredEmail || '')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -59,6 +60,12 @@ export default function LoginPage() {
         <Card className="hover-lift">
           <CardContent>
             <Stack spacing={2}>
+              {registrationSuccess && (
+                <Alert severity="success">
+                  Account created successfully. Please sign in with your new credentials.
+                </Alert>
+              )}
+
               {error && <Alert severity="error">{error}</Alert>}
 
               <Box component="form" onSubmit={handleSubmit} noValidate>

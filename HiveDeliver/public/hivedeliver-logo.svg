@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">HiveDeliver Logo</title>
+  <desc id="desc">Hexagonal drone delivery logo with package, circuit traces, and growth arrow.</desc>
+
+  <defs>
+    <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#17365f" />
+      <stop offset="1" stop-color="#0d274a" />
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6b25a" />
+      <stop offset="1" stop-color="#df7e28" />
+    </linearGradient>
+    <linearGradient id="copper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffd99f" />
+      <stop offset="1" stop-color="#f2b86a" />
+    </linearGradient>
+    <clipPath id="hex-clip">
+      <path d="M128 24 L203 68 L203 156 L128 200 L53 156 L53 68 Z" />
+    </clipPath>
+  </defs>
+
+  <path d="M128 12 L219 64 L219 168 L128 220 L37 168 L37 64 Z" fill="none" stroke="url(#navy)" stroke-width="8" stroke-linejoin="round" />
+
+  <path d="M92 40 L128 20 L164 40" fill="none" stroke="url(#navy)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+
+  <g clip-path="url(#hex-clip)">
+    <path d="M26 152 L230 152 L230 232 L26 232 Z" fill="url(#navy)" opacity="0.98" />
+
+    <g fill="none" stroke="url(#copper)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.96">
+      <path d="M76 206 V176 H110 V152" />
+      <path d="M102 206 V184 H128 V158" />
+      <path d="M128 206 V170" />
+      <path d="M154 206 V184 H128" />
+      <path d="M180 206 V176 H146 V152" />
+    </g>
+    <g fill="url(#copper)">
+      <circle cx="76" cy="206" r="5" />
+      <circle cx="102" cy="206" r="5" />
+      <circle cx="128" cy="206" r="5" />
+      <circle cx="154" cy="206" r="5" />
+      <circle cx="180" cy="206" r="5" />
+      <circle cx="110" cy="176" r="4" />
+      <circle cx="146" cy="176" r="4" />
+    </g>
+  </g>
+
+  <g stroke="url(#navy)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M128 120 V98" />
+    <path d="M128 98 H88" />
+    <path d="M128 98 H168" />
+    <path d="M88 98 L73 112" />
+    <path d="M168 98 L183 112" />
+    <path d="M88 98 L102 112" />
+    <path d="M168 98 L154 112" />
+  </g>
+
+  <g fill="url(#navy)">
+    <circle cx="69" cy="114" r="12" />
+    <circle cx="187" cy="114" r="12" />
+    <circle cx="101" cy="114" r="8" />
+    <circle cx="155" cy="114" r="8" />
+  </g>
+
+  <g>
+    <rect x="106" y="108" width="44" height="22" rx="10" fill="url(#navy)" />
+    <circle cx="128" cy="118" r="4.6" fill="url(#orange)" />
+    <path d="M116 130 H140" stroke="url(#navy)" stroke-width="4" stroke-linecap="round" />
+    <path d="M112 136 L124 136" stroke="url(#navy)" stroke-width="4" stroke-linecap="round" />
+    <path d="M132 136 L144 136" stroke="url(#navy)" stroke-width="4" stroke-linecap="round" />
+    <path d="M121 132 L116 142" stroke="url(#navy)" stroke-width="4" stroke-linecap="round" />
+    <path d="M135 132 L140 142" stroke="url(#navy)" stroke-width="4" stroke-linecap="round" />
+
+    <path d="M128 132 V146" stroke="url(#navy)" stroke-width="3.5" stroke-linecap="round" />
+    <rect x="116" y="146" width="24" height="20" rx="3.5" fill="url(#orange)" />
+    <path d="M128 146 V166" stroke="#ffe7bf" stroke-width="2.2" />
+    <path d="M116 153 H140" stroke="#ffe7bf" stroke-width="2.2" opacity="0.92" />
+  </g>
+</svg>

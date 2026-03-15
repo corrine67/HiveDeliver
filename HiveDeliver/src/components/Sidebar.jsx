@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   Box,
   List,
@@ -11,26 +12,31 @@ import {
   Button,
 } from '@mui/material'
 import { HiCubeTransparent, HiMap, HiChartBarSquare, HiCpuChip } from 'react-icons/hi2'
-import { FaHouse, FaClipboardList } from 'react-icons/fa6'
+import { FaHouse, FaClipboardList, FaLocationDot } from 'react-icons/fa6'
 import { GiDeliveryDrone } from 'react-icons/gi'
-import { MdLogout } from 'react-icons/md'
+import { MdHistory, MdLogout, MdNotificationsNone } from 'react-icons/md'
 import { useAuth } from '../contexts/AuthContext.jsx'
 
 export const drawerWidth = 270
 
 const allNavItems = [
-  { label: 'Home', path: '/home', icon: <FaHouse />, roles: ['admin', 'manager', 'user'] },
-  { label: 'Delivery Dashboard', path: '/dashboard', icon: <HiCubeTransparent />, roles: ['admin', 'manager'] },
-  { label: 'Live Drone Map', path: '/map', icon: <HiMap />, roles: ['admin', 'manager', 'user'] },
-  { label: 'Create Delivery Order', path: '/order', icon: <FaClipboardList />, roles: ['admin', 'manager', 'user'] },
-  { label: 'Swarm Intelligence', path: '/intelligence', icon: <HiCpuChip />, roles: ['admin'] },
-  { label: 'Analytics', path: '/analytics', icon: <HiChartBarSquare />, roles: ['admin', 'manager'] },
-  { label: 'Fleet Management', path: '/fleet', icon: <GiDeliveryDrone />, roles: ['admin'] },
+  { key: 'home', label: 'Home', path: '/home', icon: <FaHouse />, roles: ['admin', 'manager'] },
+  { key: 'dashboard', label: 'Delivery Dashboard', path: '/dashboard', icon: <HiCubeTransparent />, roles: ['admin', 'manager', 'user'] },
+  { key: 'order', label: 'Create Delivery Order', path: '/order', icon: <FaClipboardList />, roles: ['admin', 'manager', 'user'] },
+  { key: 'map', label: 'Live Drone Map', path: '/map', icon: <HiMap />, roles: ['admin', 'manager', 'user'] },
+  { key: 'history', label: 'Delivery History', path: '/history', icon: <MdHistory />, roles: ['user'] },
+  { key: 'addresses', label: 'Saved Addresses', path: '/addresses', icon: <FaLocationDot />, roles: ['user'] },
+  { key: 'notifications', label: 'Notifications', path: '/notifications', icon: <MdNotificationsNone />, roles: ['user'] },
+  { key: 'intelligence', label: 'Swarm Intelligence', path: '/intelligence', icon: <HiCpuChip />, roles: ['admin'] },
+  { key: 'analytics', label: 'Analytics', path: '/analytics', icon: <HiChartBarSquare />, roles: ['admin', 'manager'] },
+  { key: 'fleet', label: 'Fleet Management', path: '/fleet', icon: <GiDeliveryDrone />, roles: ['admin'] },
 ]
 
 function Sidebar({ onNavigate }) {
   const { logout, user } = useAuth()
+  const { t } = useTranslation()
   const navigate = useNavigate()
+  const brandLogo = '/hivedeliver-logo.svg'
 
   const handleLogout = () => {
     logout()
@@ -45,33 +51,18 @@ function Sidebar({ onNavigate }) {
     <Box sx={{ height: '100%', p: 2.2, display: 'flex', flexDirection: 'column' }}>
       <Stack direction="row" spacing={1.2} alignItems="center" sx={{ mb: 2.2, px: 1 }}>
         <Box
+          component="img"
+          src={brandLogo}
+          alt="HiveDeliver logo"
           sx={{
             width: 42,
             height: 42,
-            borderRadius: 2.5,
-            background: 'linear-gradient(135deg, #0f766e 0%, #14b8a6 100%)',
-            display: 'grid',
-            placeItems: 'center',
-            color: 'white',
-            fontWeight: 800,
-            fontSize: '1.1rem',
+            borderRadius: 2,
+            objectFit: 'cover',
             boxShadow: '0 6px 20px rgba(15,118,110,0.35)',
-            position: 'relative',
-            overflow: 'hidden',
+            border: '1px solid rgba(15,118,110,0.2)',
           }}
-        >
-          H
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%)',
-            }}
-          />
-        </Box>
+        />
         <Stack spacing={0}>
           <Typography variant="h6" sx={{ lineHeight: 1.1, fontWeight: 800, fontSize: '1.05rem' }}>
             {t('common.appName')}

@@ -1,15 +1,19 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import L from 'leaflet'
 import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer, Tooltip } from 'react-leaflet'
 import { Box, Card, CardContent, Stack, Typography } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 import HeatmapLayer from './HeatmapLayer.jsx'
 import {
   WAREHOUSE,
   allDestinations,
+  locationWeatherData,
   noFlyZones,
   generateDroneFleet,
   assignRoutes,
+  distanceMeters,
   priorityColors,
+  SWARM_COMMUNICATION_RANGE_METERS,
 } from '../data/simulationData.js'
 
 /* ---- Leaflet icons ---- */
@@ -26,30 +30,36 @@ const iconByType = {
     iconSize: [30, 30],
     iconAnchor: [15, 15],
   }),
-  urban: L.divIcon({
-    className: 'map-div-icon',
-    html: '<div class="map-pin map-pin-point">U</div>',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-  }),
-  rural: L.divIcon({
-    className: 'map-div-icon',
-    html: '<div class="map-pin map-pin-rural">R</div>',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-  }),
-  critical: L.divIcon({
-    className: 'map-div-icon',
-    html: '<div class="map-pin map-pin-critical">!</div>',
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-  }),
 }
 
-function getDestIcon(dest) {
-  if (dest.priority === 'critical') return iconByType.critical
-  if (dest.type === 'rural') return iconByType.rural
-  return iconByType.urban
+const weatherBadgeBySafety = {
+  Safe: { symbol: '☀', className: 'map-weather-safe' },
+  Caution: { symbol: '🌧', className: 'map-weather-caution' },
+  Unsafe: { symbol: '⛈', className: 'map-weather-unsafe' },
+}
+
+const rainKeyByValue = {
+  Light: 'weather.rainLight',
+  Moderate: 'weather.rainModerate',
+  Heavy: 'weather.rainHeavy',
+}
+
+function getDestinationIcon(dest, weather) {
+  const pinClass = dest.priority === 'critical'
+    ? 'map-pin-critical'
+    : dest.type === 'rural'
+      ? 'map-pin-rural'
+      : 'map-pin-point'
+
+  const pinLabel = dest.priority === 'critical' ? '!' : dest.type === 'rural' ? 'R' : 'U'
+  const badge = weatherBadgeBySafety[weather?.flightSafety] || weatherBadgeBySafety.Safe
+
+  return L.divIcon({
+    className: 'map-div-icon',
+    html: `<div class="map-pin-wrap"><div class="map-pin ${pinClass}">${pinLabel}</div><div class="map-weather-badge ${badge.className}">${badge.symbol}</div></div>`,
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+  })
 }
 
 /* ---- Interpolate position along path ---- */
@@ -78,14 +88,22 @@ function EnhancedDroneMap({
   showHeatmap = false,
   priorityMode = false,
   showNoFlyZones = true,
+  onSwarmStateChange,
+  onSwarmAlertsChange,
 }) {
+  const { t } = useTranslation()
   const [droneFleet, setDroneFleet] = useState(() => generateDroneFleet(droneCount))
   const [routes, setRoutes] = useState([])
   const [progress, setProgress] = useState({})
-  const [coverageHistory, setCoverageHistory] = useState([])
   const [heatmapPoints, setHeatmapPoints] = useState([])
+  const [alertOffset, setAlertOffset] = useState(0)
   const tickRef = useRef(null)
   const coverageRef = useRef([])
+
+  const weatherByDestinationId = useMemo(
+    () => Object.fromEntries(locationWeatherData.map((entry) => [entry.destinationId, entry])),
+    [],
+  )
 
   // Regenerate fleet when drone count changes
   useEffect(() => {
@@ -186,9 +204,114 @@ function EnhancedDroneMap({
         ...route,
         position,
         eta: Math.max(1, Math.round((1 - p) * 14 / speed)),
+        status: p > 0.82 ? 'returning' : 'delivering',
       }
     })
   }, [routes, progress, speed])
+
+  const communicationLinks = useMemo(() => {
+    const links = []
+
+    for (let i = 0; i < dronePositions.length; i += 1) {
+      for (let j = i + 1; j < dronePositions.length; j += 1) {
+        const source = dronePositions[i]
+        const target = dronePositions[j]
+        const distance = distanceMeters(source.position, target.position)
+
+        if (distance <= SWARM_COMMUNICATION_RANGE_METERS) {
+          links.push({
+            id: `${source.droneId}-${target.droneId}`,
+            sourceId: source.droneId,
+            targetId: target.droneId,
+            positions: [source.position, target.position],
+            distance: Math.round(distance),
+          })
+        }
+      }
+    }
+
+    return links
+  }, [dronePositions])
+
+  const neighborCounts = useMemo(() => {
+    const counts = Object.fromEntries(dronePositions.map((drone) => [drone.droneId, 0]))
+
+    communicationLinks.forEach((link) => {
+      counts[link.sourceId] = (counts[link.sourceId] || 0) + 1
+      counts[link.targetId] = (counts[link.targetId] || 0) + 1
+    })
+
+    return counts
+  }, [communicationLinks, dronePositions])
+
+  const candidateAlerts = useMemo(() => {
+    const alerts = []
+    const unsafeRoutes = dronePositions.filter((drone) => {
+      const weather = weatherByDestinationId[drone.destinationId]
+      return weather?.flightSafety === 'Unsafe'
+    })
+
+    unsafeRoutes.slice(0, 2).forEach((drone) => {
+      const weather = weatherByDestinationId[drone.destinationId]
+      const supportDrone = dronePositions
+        .filter((candidate) => candidate.droneId !== drone.droneId)
+        .sort((left, right) => distanceMeters(left.position, drone.position) - distanceMeters(right.position, drone.position))[0]
+
+      alerts.push({
+        id: `weather-${drone.droneId}`,
+        type: 'weather',
+        level: t('map.alertLevelAdaptive'),
+        title: t('map.swarmAdjustment'),
+        subtitle: t('map.weatherAlertDetected'),
+        lines: [
+          t('map.heavyRainDetectedNear', { location: weather?.location || drone.destinationName }),
+          t('map.routeAdjustedForDrone', { droneId: drone.droneId }),
+          supportDrone
+            ? t('map.assistingNearbyDelivery', { droneId: supportDrone.droneId })
+            : t('map.taskRedistributionEnabledMessage'),
+        ],
+      })
+    })
+
+    const busiestDroneId = Object.entries(neighborCounts)
+      .sort((left, right) => right[1] - left[1])[0]?.[0]
+
+    if (busiestDroneId && (neighborCounts[busiestDroneId] || 0) >= 3) {
+      alerts.push({
+        id: `traffic-${busiestDroneId}`,
+        type: 'traffic',
+        level: t('map.alertLevelTraffic'),
+        title: t('map.highDroneTrafficDetected'),
+        subtitle: t('map.decentralizedCoordinationActive'),
+        lines: [
+          t('map.localTrafficDensityHigh', { droneId: busiestDroneId }),
+          t('map.trafficReroutedDrone', { droneId: busiestDroneId }),
+        ],
+      })
+    }
+
+    return alerts
+  }, [dronePositions, neighborCounts, t, weatherByDestinationId])
+
+  const visibleAlerts = useMemo(() => {
+    if (candidateAlerts.length <= 2) return candidateAlerts
+
+    return [
+      candidateAlerts[alertOffset % candidateAlerts.length],
+      candidateAlerts[(alertOffset + 1) % candidateAlerts.length],
+    ]
+  }, [alertOffset, candidateAlerts])
+
+  const swarmSummaryRef = useRef(null)
+  swarmSummaryRef.current = {
+    activeDroneCount: dronePositions.length,
+    communicationEnabled: communicationLinks.length > 0,
+    communicationLinks: communicationLinks.length,
+    collisionAvoidanceActive: dronePositions.length > 1,
+    routeOptimizationRunning: isRunning && routes.length > 0,
+    taskRedistributionEnabled: candidateAlerts.length > 0,
+    activeAlerts: candidateAlerts.length,
+  }
 
   // Reset handler (exposed via parent)
   const handleReset = useCallback(() => {
@@ -204,12 +327,42 @@ function EnhancedDroneMap({
     return () => { delete window.__droneMapReset }
   }, [handleReset])
 
+  useEffect(() => {
+    if (candidateAlerts.length <= 2) {
+      setAlertOffset(0)
+      return undefined
+    }
+
+    const interval = setInterval(() => {
+      setAlertOffset((current) => (current + 1) % candidateAlerts.length)
+    }, 4500)
+
+    return () => clearInterval(interval)
+  }, [candidateAlerts.length])
+
+  useEffect(() => {
+    if (!onSwarmStateChange) return undefined
+
+    onSwarmStateChange(swarmSummaryRef.current)
+
+    const interval = setInterval(() => {
+      onSwarmStateChange(swarmSummaryRef.current)
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [onSwarmStateChange])
+
+  useEffect(() => {
+    if (!onSwarmAlertsChange) return
+    onSwarmAlertsChange(visibleAlerts)
+  }, [onSwarmAlertsChange, visibleAlerts])
+
   return (
     <Card className="hover-lift">
       <CardContent>
         <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" spacing={1} sx={{ mb: 1.5 }}>
           <Typography variant="h6">
-            {showHeatmap ? 'Coverage Heatmap View' : 'Live Drone Coordination'}
+            {showHeatmap ? t('controls.heatmapView') : t('map.liveCoordination')}
           </Typography>
           <Stack direction="row" spacing={1} alignItems="center">
             <Box
@@ -222,20 +375,20 @@ function EnhancedDroneMap({
               }}
             />
             <Typography variant="body2" color="text.secondary">
-              {isRunning ? 'Simulation running' : 'Simulation paused'}
+              {isRunning ? t('map.simRunning') : t('map.simPaused')}
               {' | '}
-              {dronePositions.length} drones active
+              {dronePositions.length} {t('map.dronesActive')}
               {' | '}
-              Speed: {speed}x
+              {t('map.speed')}: {speed}x
             </Typography>
           </Stack>
         </Stack>
 
-        <Box sx={{ borderRadius: 3, overflow: 'hidden', border: '1px solid #d2e4ea' }}>
+        <Box sx={{ position: 'relative', borderRadius: 3, overflow: 'hidden', border: '1px solid #d2e4ea' }}>
           <MapContainer
             center={WAREHOUSE.position}
             zoom={13}
-            style={{ height: '520px', width: '100%' }}
+            style={{ height: 'clamp(680px, 78vh, 820px)', width: '100%' }}
             scrollWheelZoom
           >
             <TileLayer
@@ -263,7 +416,7 @@ function EnhancedDroneMap({
                 }}
               >
                 <Tooltip direction="top" permanent={false}>
-                  <strong>No-Fly Zone</strong><br />
+                  <strong>{t('map.noFlyZone')}</strong><br />
                   {zone.name}
                 </Tooltip>
               </Circle>
@@ -273,42 +426,131 @@ function EnhancedDroneMap({
             <Marker position={WAREHOUSE.position} icon={iconByType.warehouse}>
               <Popup>
                 <strong>{WAREHOUSE.name}</strong><br />
-                Central dispatch hub
+                {t('map.centralDispatchHub')}
               </Popup>
             </Marker>
 
             {/* Destination markers */}
-            {allDestinations.map((dest) => (
-              <Marker key={dest.id} position={dest.position} icon={getDestIcon(dest)}>
+            {allDestinations.map((dest) => {
+              const weather = weatherByDestinationId[dest.id]
+              const safety = weather?.flightSafety || 'Safe'
+              const rainLabel = weather ? t(rainKeyByValue[weather.rain] || weather.rain) : '-'
+
+              return (
+              <Marker key={dest.id} position={dest.position} icon={getDestinationIcon(dest, weather)}>
                 <Tooltip direction="top" permanent={false}>
                   <div style={{ minWidth: 140 }}>
                     <strong>{dest.name}</strong><br />
-                    Type: {dest.type === 'rural' ? 'Rural/Remote' : 'Urban'}<br />
-                    Priority: <span style={{ color: priorityColors[dest.priority], fontWeight: 700 }}>
-                      {dest.priority.toUpperCase()}
+                    {t('map.typeLabel')}: {dest.type === 'rural' ? t('map.ruralRemoteType') : t('map.urbanType')}<br />
+                    {t('map.priorityLabel')}: <span style={{ color: priorityColors[dest.priority], fontWeight: 700 }}>
+                      {t(`map.${dest.priority}`)}
                     </span>
                   </div>
                 </Tooltip>
                 <Popup>
-                  <strong>{dest.name}</strong><br />
-                  Type: {dest.type === 'rural' ? 'Rural/Remote' : 'Urban'}<br />
-                  Priority: {dest.priority.toUpperCase()}
+                  <strong>{t('map.locationLabel')}:</strong> {dest.name}<br />
+                  {t('map.typeLabel')}: {dest.type === 'rural' ? t('map.ruralRemoteType') : t('map.urbanType')}<br />
+                  {t('map.priorityLabel')}: {t(`map.${dest.priority}`)}
+                  <br /><br />
+                  <strong>{t('map.weatherConditions')}</strong><br />
+                  {t('weather.windSpeed')}: {weather?.windSpeed || '-'}<br />
+                  {t('weather.rain')}: {rainLabel}<br />
+                  {t('weather.temperature')}: {weather?.temperature || '-'}<br />
+                  {t('weather.flightSafety')}: <span style={{ fontWeight: 700, color: safety === 'Unsafe' ? '#dc2626' : safety === 'Caution' ? '#f97316' : '#16a34a' }}>
+                    {t(`weather.status${safety}`)}
+                  </span>
+                  {weather?.messageKey && (
+                    <>
+                      <br /><br />
+                      <strong>{t('map.messageLabel')}:</strong><br />
+                      {t(weather.messageKey)}
+                    </>
+                  )}
                 </Popup>
               </Marker>
-            ))}
+              )
+            })}
 
             {/* Drone route polylines */}
             {!showHeatmap && dronePositions.map((drone) => (
               <Polyline
                 key={`route-${drone.droneId}`}
                 positions={drone.path}
-                pathOptions={{
-                  color: drone.color,
-                  weight: 3,
-                  dashArray: drone.destinationType === 'rural' ? '4 8' : '10 6',
-                  opacity: 0.7,
-                }}
-              />
+                pathOptions={(() => {
+                  const routeWeather = weatherByDestinationId[drone.destinationId]
+                  const defaultStyle = {
+                    color: drone.color,
+                    weight: 3,
+                    dashArray: drone.destinationType === 'rural' ? '4 8' : '10 6',
+                    opacity: 0.7,
+                  }
+
+                  if (!routeWeather) return defaultStyle
+                  if (routeWeather.flightSafety === 'Unsafe') {
+                    return {
+                      ...defaultStyle,
+                      color: '#dc2626',
+                      weight: 4,
+                      dashArray: '3 8',
+                      opacity: 0.9,
+                    }
+                  }
+
+                  if (routeWeather.flightSafety === 'Caution') {
+                    return {
+                      ...defaultStyle,
+                      color: '#f97316',
+                      weight: 3.5,
+                      dashArray: '6 7',
+                      opacity: 0.85,
+                    }
+                  }
+
+                  return defaultStyle
+                })()}
+              >
+                {(() => {
+                  const routeWeather = weatherByDestinationId[drone.destinationId]
+                  if (!routeWeather || routeWeather.flightSafety === 'Safe') return null
+                  return <Tooltip direction="center">{t('map.weatherAffectedRoute')}</Tooltip>
+                })()}
+              </Polyline>
+            ))}
+
+            {/* Drone communication links */}
+            {communicationLinks.map((link) => (
+              <Fragment key={link.id}>
+                <Polyline
+                  key={`comm-base-${link.id}`}
+                  positions={link.positions}
+                  pathOptions={{
+                    color: '#0f766e',
+                    weight: 4,
+                    opacity: 0.12,
+                    className: 'swarm-comm-link-base',
+                  }}
+                />
+                <Polyline
+                  key={`comm-${link.id}`}
+                  positions={link.positions}
+                  pathOptions={{
+                    color: '#14b8a6',
+                    weight: 2.4,
+                    opacity: 0.45,
+                    dashArray: '6 10',
+                    lineCap: 'round',
+                    className: 'swarm-comm-link-active',
+                  }}
+                >
+                  <Tooltip direction="center">
+                    <div>
+                      <strong>{t('map.communicationLine')}</strong><br />
+                      {t('map.communicationLinkBetween', { source: link.sourceId, target: link.targetId })}<br />
+                      {t('map.linkDistanceMeters', { count: link.distance })}
+                    </div>
+                  </Tooltip>
+                </Polyline>
+              </Fragment>
             ))}
 
             {/* Drone markers with hover info */}
@@ -320,23 +562,25 @@ function EnhancedDroneMap({
               >
                 <Tooltip direction="top" permanent={false} className="drone-tooltip">
                   <div style={{ minWidth: 160 }}>
-                    <strong>Drone {drone.droneId}</strong><br />
-                    Destination: {drone.destinationName}<br />
-                    Parcels: {drone.parcelsAssigned}<br />
-                    Battery: {drone.batteryLevel}%<br />
-                    ETA: ~{drone.eta} min<br />
-                    Priority: <span style={{ color: priorityColors[drone.priority], fontWeight: 700 }}>
-                      {drone.priority.toUpperCase()}
+                    <strong>{t('map.droneWithId', { droneId: drone.droneId })}</strong><br />
+                    {t('map.destinationLabel')}: {drone.destinationName}<br />
+                    {t('map.parcelsLabel')}: {drone.parcelsAssigned}<br />
+                    {t('map.batteryLabel')}: {drone.batteryLevel}%<br />
+                    {t('map.etaLabel')}: ~{drone.eta} {t('map.minShort')}<br />
+                    {t('dashboard.status')}: {t(`map.${drone.status}`)}<br />
+                    {t('map.priorityLabel')}: <span style={{ color: priorityColors[drone.priority], fontWeight: 700 }}>
+                      {t(`map.${drone.priority}`)}
                     </span>
                   </div>
                 </Tooltip>
                 <Popup>
-                  <strong>Drone {drone.droneId}</strong><br />
-                  Heading to: {drone.destinationName}<br />
-                  Type: {drone.destinationType}<br />
-                  Parcels assigned: {drone.parcelsAssigned}<br />
-                  Battery: {drone.batteryLevel}%<br />
-                  ETA: ~{drone.eta} min
+                  <strong>{t('map.droneWithId', { droneId: drone.droneId })}</strong><br />
+                  {t('map.headingToLabel')}: {drone.destinationName}<br />
+                  {t('map.typeLabel')}: {drone.destinationType === 'rural' ? t('map.ruralRemoteType') : t('map.urbanType')}<br />
+                  {t('map.parcelsAssignedLabel')}: {drone.parcelsAssigned}<br />
+                  {t('map.batteryLabel')}: {drone.batteryLevel}%<br />
+                  {t('map.etaLabel')}: ~{drone.eta} {t('map.minShort')}<br />
+                  {t('dashboard.status')}: {t(`map.${drone.status}`)}
                 </Popup>
               </Marker>
             ))}

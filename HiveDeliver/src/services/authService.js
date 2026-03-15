@@ -93,7 +93,6 @@ export function register({ email, password, role, name }) {
   saveUsers(nextUsers)
 
   const user = { id: newUser.id, email: newUser.email, role: newUser.role, name: newUser.name }
-  setCurrentUser(user)
   return user
 }
 
