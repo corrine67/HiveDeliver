@@ -78,20 +78,17 @@ function SecurityDashboard() {
   }
 
   const handleVerifyOtp = () => {
-    // Generate a random 6-digit OTP for demo purposes
-    const correctOtp = '123456' // In real app, this would come from backend
-
+    const correctOtp = '123456'
     if (otpInput.length !== 6) {
-      setOtpError('Please enter a 6-digit OTP')
+      setOtpError(t('security.otpLengthError'))
       return
     }
-
     if (otpInput === correctOtp) {
       setOtpVerified(true)
       setOtpError('')
       setVerifiedParcels(prev => [...prev, selectedParcel])
     } else {
-      setOtpError('Invalid OTP. Please try again.')
+      setOtpError(t('security.otpInvalid'))
     }
   }
 
@@ -107,8 +104,8 @@ function SecurityDashboard() {
     <Stack spacing={3}>
       <Box className="reveal-up">
         <PageHeader
-          title="Security & Blockchain Dashboard"
-          subtitle="Monitor encrypted communications, blockchain ledger, and secure delivery verification"
+          title={t('security.title')}
+          subtitle={t('security.subtitle')}
         />
       </Box>
 
@@ -121,14 +118,14 @@ function SecurityDashboard() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <FaLock style={{ color: '#22c55e', fontSize: '1.5rem' }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    Encryption Status
+                    {t('security.encryptionStatus')}
                   </Typography>
                 </Box>
                 <Typography variant="h4" sx={{ fontWeight: 700, color: '#22c55e' }}>
                   100%
                 </Typography>
                 <Typography variant="caption" sx={{ color: '#666' }}>
-                  All communications encrypted
+                  {t('security.allEncrypted')}
                 </Typography>
               </Stack>
             </CardContent>
@@ -142,14 +139,14 @@ function SecurityDashboard() {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <FaKey style={{ color: '#3b82f6', fontSize: '1.5rem' }} />
                   <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                    Blockchain Blocks
+                    {t('security.blockchainBlocks')}
                   </Typography>
                 </Box>
                 <Typography variant="h4" sx={{ fontWeight: 700, color: '#3b82f6' }}>
                   {blockchainLedger.length}
                 </Typography>
                 <Typography variant="caption" sx={{ color: '#666' }}>
-                  Immutable ledger entries
+                  {t('security.immutableEntries')}
                 </Typography>
               </Stack>
             </CardContent>
@@ -161,13 +158,13 @@ function SecurityDashboard() {
             <CardContent>
               <Stack spacing={1}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                  OTP Verifications
+                  {t('security.otpVerifications')}
                 </Typography>
                 <Typography variant="h4" sx={{ fontWeight: 700, color: '#f97316' }}>
                   8
                 </Typography>
                 <Typography variant="caption" sx={{ color: '#666' }}>
-                  Secure releases today
+                  {t('security.secureReleasesToday')}
                 </Typography>
               </Stack>
             </CardContent>
@@ -179,13 +176,13 @@ function SecurityDashboard() {
             <CardContent>
               <Stack spacing={1}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                  Security Score
+                  {t('security.securityScore')}
                 </Typography>
                 <Typography variant="h4" sx={{ fontWeight: 700, color: '#a855f7' }}>
                   98/100
                 </Typography>
                 <Typography variant="caption" sx={{ color: '#666' }}>
-                  Enterprise grade
+                  {t('security.enterpriseGrade')}
                 </Typography>
               </Stack>
             </CardContent>
@@ -198,28 +195,28 @@ function SecurityDashboard() {
         <CardContent>
           <Stack spacing={2}>
             <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              🔗 Blockchain Delivery Ledger
+              🔗 {t('security.blockchainLedgerTitle')}
             </Typography>
             <Typography variant="body2" sx={{ color: '#666' }}>
-              Immutable record of all delivery events. Each block is cryptographically linked to ensure no tampering.
+              {t('security.blockchainLedgerDesc')}
             </Typography>
 
             <Alert severity="info">
-              ✓ <strong>How it works:</strong> Every delivery milestone (pickup, handoff, delivery) is recorded as a block. Each block contains a hash of the previous block, creating an unbreakable chain of custody.
+              ✓ <strong>{t('security.howItWorks')}:</strong> {t('security.blockchainHow')}
             </Alert>
 
             <TableContainer>
               <Table size="small">
                 <TableHead>
                   <TableRow sx={{ backgroundColor: 'rgba(15,118,110,0.05)' }}>
-                    <TableCell sx={{ fontWeight: 600 }}>Block ID</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Timestamp</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Event</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Parcel</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Drone</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Location</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Hash</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('security.colBlockId')}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('security.colTimestamp')}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('security.colEvent')}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('security.colParcel')}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('security.colDrone')}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('security.colLocation')}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('security.colHash')}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{t('security.colStatus')}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -254,14 +251,14 @@ function SecurityDashboard() {
         <CardContent>
           <Stack spacing={2}>
             <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              🔐 OTP Secure Release
+              🔐 {t('security.otpTitle')}
             </Typography>
             <Typography variant="body2" sx={{ color: '#666' }}>
-              Parcels can only be released after the recipient enters a 6-digit OTP sent to their phone. This ensures secure delivery.
+              {t('security.otpDesc')}
             </Typography>
 
             <Alert severity="success">
-              ✓ <strong>Test OTP:</strong> 123456 (Use this code to verify the secure release mechanism)
+              ✓ <strong>{t('security.testOtp')}:</strong> {t('security.testOtpNote')}
             </Alert>
 
             <Stack spacing={2}>
@@ -282,17 +279,16 @@ function SecurityDashboard() {
                   >
                     <Stack spacing={0.5}>
                       <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                        Parcel {parcelId}
+                        {t('security.parcelLabel')} {parcelId}
                       </Typography>
                       <Typography variant="caption" sx={{ color: isVerified ? '#22c55e' : '#666' }}>
-                        {isVerified ? '✓ OTP verified - Ready for pickup' : 'Awaiting OTP verification for secure release'}
+                        {isVerified ? t('security.otpVerifiedReady') : t('security.awaitingOtp')}
                       </Typography>
                     </Stack>
                     <Button
-                      variant={isVerified ? "outlined" : "contained"}
+                      variant={isVerified ? 'outlined' : 'contained'}
                       size="small"
-                      onClick={() => handleOtpClick(parcelId)}
-                      disabled={isVerified}
+                      onClick={() => !isVerified && handleOtpClick(parcelId)}
                       sx={{
                         backgroundColor: isVerified ? 'transparent' : '#0f766e',
                         borderColor: isVerified ? '#22c55e' : '#0f766e',
@@ -303,7 +299,7 @@ function SecurityDashboard() {
                         },
                       }}
                     >
-                      {isVerified ? 'Verified' : 'Verify OTP'}
+                      {isVerified ? t('security.verified') : t('security.verifyOtp')}
                     </Button>
                   </Box>
                 )
@@ -316,16 +312,16 @@ function SecurityDashboard() {
       {/* OTP Verification Dialog */}
       <Dialog open={otpDialog} onClose={handleCloseOtp} maxWidth="sm" fullWidth>
         <DialogTitle sx={{ fontWeight: 700 }}>
-          Enter OTP for Parcel {selectedParcel}
+          {t('security.otpDialogTitle')} {selectedParcel}
         </DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ mt: 2 }}>
             <Typography variant="body2" sx={{ color: '#666' }}>
-              A 6-digit OTP has been sent to the recipient's phone. Enter it below to verify secure release.
+              {t('security.otpDialogDesc')}
             </Typography>
             <TextField
               fullWidth
-              label="6-Digit OTP"
+              label={t('security.otpFieldLabel')}
               placeholder="000000"
               value={otpInput}
               onChange={(e) => {
@@ -341,16 +337,16 @@ function SecurityDashboard() {
             />
             {otpVerified && (
               <Alert severity="success">
-                ✓ OTP verified successfully! Parcel {selectedParcel} is now released and ready for pickup.
+                ✓ {t('security.otpSuccessMsg')} {selectedParcel} {t('security.otpSuccessMsgEnd')}
               </Alert>
             )}
           </Stack>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseOtp}>Close</Button>
+          <Button onClick={handleCloseOtp}>{t('security.close')}</Button>
           {!otpVerified && (
             <Button onClick={handleVerifyOtp} variant="contained" sx={{ backgroundColor: '#0f766e' }}>
-              Verify OTP
+              {t('security.verifyOtp')}
             </Button>
           )}
         </DialogActions>
