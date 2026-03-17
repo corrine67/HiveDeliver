@@ -12,6 +12,7 @@ import IntelligencePage from './pages/IntelligencePage.jsx'
 import AnalyticsPage from './pages/AnalyticsPage.jsx'
 import FleetPage from './pages/FleetPage.jsx'
 import DeliveryHistory from './pages/DeliveryHistory.jsx'
+import ManagerDeliveryHistory from './pages/ManagerDeliveryHistory.jsx'
 import SavedAddresses from './pages/SavedAddresses.jsx'
 import NotificationsPage from './pages/NotificationsPage.jsx'
 import SecurityDashboard from './pages/SecurityDashboard.jsx'
@@ -57,6 +58,7 @@ function App() {
             <Route path="/map" element={<LiveMapPage />} />
             <Route path="/order" element={<CreateOrderPage />} />
             <Route path="/history" element={<DeliveryHistory />} />
+            <Route path="/manager-history" element={<ManagerDeliveryHistory />} />
             <Route path="/addresses" element={<SavedAddresses />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/intelligence" element={<IntelligencePage />} />
