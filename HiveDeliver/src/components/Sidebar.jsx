@@ -24,6 +24,7 @@ const allNavItems = [
   { key: 'order', label: 'Create Delivery Order', path: '/order', icon: <FaClipboardList />, roles: ['admin', 'manager', 'user'] },
   { key: 'map', label: 'Live Drone Map', path: '/map', icon: <HiMap />, roles: ['admin', 'manager', 'user'] },
   { key: 'history', label: 'Delivery History', path: '/history', icon: <MdHistory />, roles: ['user'] },
+  { key: 'managerHistory', label: 'Delivery History', path: '/manager-history', icon: <MdHistory />, roles: ['admin', 'manager'] },
   { key: 'addresses', label: 'Saved Addresses', path: '/addresses', icon: <FaLocationDot />, roles: ['user'] },
 
   { key: 'intelligence', label: 'Swarm Intelligence', path: '/intelligence', icon: <HiCpuChip />, roles: ['admin'] },
@@ -106,7 +107,7 @@ function Sidebar({ onNavigate }) {
               {item.icon}
             </ListItemIcon>
             <ListItemText
-              primary={t(`nav.${item.key}`)}
+              primary={item.key === 'managerHistory' ? t('nav.history') : t(`nav.${item.key}`)}
               primaryTypographyProps={{
                 fontWeight: 600,
                 fontSize: '0.84rem',
