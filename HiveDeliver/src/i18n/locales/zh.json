@@ -251,6 +251,9 @@
     "cancelled": "已取消",
     "failed": "失败",
     "noResults": "当前筛选条件下没有匹配记录。",
+    "recipient": "收件人",
+    "weight": "重量",
+    "note": "备注",
     "feedbackTitle": "您的反馈很重要",
     "feedbackSubtitle": "扫一扫二维码告诉我们您的体验!",
     "scanPrompt": "扫一扫提供反馈"
