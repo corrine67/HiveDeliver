@@ -16,8 +16,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { FaRocket, FaRobot, FaInfoCircle } from 'react-icons/fa6'
-import { FaCheckCircle } from 'react-icons/fa'
+import { FaCheckCircle, FaInfoCircle, FaRocket, FaRobot } from 'react-icons/fa'
 import PageHeader from '../components/PageHeader.jsx'
 import { drones } from '../data/mockData.js'
 
