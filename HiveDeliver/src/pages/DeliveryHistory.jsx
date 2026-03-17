@@ -96,12 +96,10 @@ function DeliveryHistory() {
     return () => { isMounted = false }
   }, [])
 
-  // All records owned by this user
+  // All records for this SME user — any user with role 'user' sees the same sample data
   const ownedRecords = useMemo(() => {
-    return deliveryHistoryRecords.filter((row) =>
-      user.role === 'manager' || user.role === 'admin' || row.userId === user.id
-    )
-  }, [user.id, user.role])
+    return deliveryHistoryRecords.filter((row) => row.userRole === 'user')
+  }, [])
 
   const filteredRows = useMemo(() => {
     const normalized = search.trim().toLowerCase()
