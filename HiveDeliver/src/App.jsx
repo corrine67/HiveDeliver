@@ -18,6 +18,7 @@ import NotificationsPage from './pages/NotificationsPage.jsx'
 import SecurityDashboard from './pages/SecurityDashboard.jsx'
 import SwarmOptimizationPage from './pages/SwarmOptimizationPage.jsx'
 import InteractiveFeaturesPage from './pages/InteractiveFeaturesPage.jsx'
+import SupportChatbotPage from './pages/SupportChatbotPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 import RequireAuth from './components/RequireAuth.jsx'
@@ -67,6 +68,7 @@ function App() {
             <Route path="/security" element={<SecurityDashboard />} />
             <Route path="/optimization" element={<SwarmOptimizationPage />} />
             <Route path="/interactive" element={<InteractiveFeaturesPage />} />
+            <Route path="/support" element={<SupportChatbotPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
