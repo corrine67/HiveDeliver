@@ -99,7 +99,7 @@ function DeliveryHistory() {
   // All records owned by this user
   const ownedRecords = useMemo(() => {
     return deliveryHistoryRecords.filter((row) =>
-      user.role === 'manager' || row.userId === user.id
+      user.role === 'manager' || user.role === 'admin' || row.userId === user.id
     )
   }, [user.id, user.role])
 
