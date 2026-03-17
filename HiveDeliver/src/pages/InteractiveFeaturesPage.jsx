@@ -18,6 +18,7 @@ import {
 import { FaCamera, FaMicrophone } from 'react-icons/fa6'
 import { MdCheckCircle } from 'react-icons/md'
 import PageHeader from '../components/PageHeader.jsx'
+import CameraFeed from '../components/CameraFeed.jsx'
 
 // Mock drone camera feeds
 const droneFeeds = [
@@ -332,58 +333,12 @@ function InteractiveFeaturesPage() {
           </Box>
         </DialogTitle>
         <DialogContent>
-          <Stack spacing={2} sx={{ mt: 2 }}>
-            <Box
-              component="img"
-              src={selectedFeed?.feedUrl}
-              alt={`Drone ${selectedFeed?.droneId} full feed`}
-              sx={{ width: '100%', borderRadius: 2 }}
-            />
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Stack spacing={0.5}>
-                  <Typography variant="caption" sx={{ color: '#666', fontWeight: 600 }}>
-                    Location
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {selectedFeed?.location}
-                  </Typography>
-                </Stack>
-              </Grid>
-              <Grid item xs={6}>
-                <Stack spacing={0.5}>
-                  <Typography variant="caption" sx={{ color: '#666', fontWeight: 600 }}>
-                    Status
-                  </Typography>
-                  <Chip label={selectedFeed?.status} size="small" />
-                </Stack>
-              </Grid>
-              <Grid item xs={6}>
-                <Stack spacing={0.5}>
-                  <Typography variant="caption" sx={{ color: '#666', fontWeight: 600 }}>
-                    Altitude
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {selectedFeed?.altitude}
-                  </Typography>
-                </Stack>
-              </Grid>
-              <Grid item xs={6}>
-                <Stack spacing={0.5}>
-                  <Typography variant="caption" sx={{ color: '#666', fontWeight: 600 }}>
-                    Speed
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {selectedFeed?.speed}
-                  </Typography>
-                </Stack>
-              </Grid>
-            </Grid>
-          </Stack>
+          {selectedFeed && (
+            <Box sx={{ mt: 2 }}>
+              <CameraFeed feed={selectedFeed} onClose={() => setSelectedFeed(null)} />
+            </Box>
+          )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSelectedFeed(null)}>Close</Button>
-        </DialogActions>
       </Dialog>
 
       {/* Voice Command Confirmation Dialog */}
