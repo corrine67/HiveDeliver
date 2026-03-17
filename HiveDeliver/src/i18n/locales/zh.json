@@ -22,6 +22,9 @@
     "intelligence": "蜂群智能",
     "analytics": "数据分析",
     "fleet": "机队管理",
+    "security": "安全与区块链",
+    "optimization": "蜂群优化",
+    "interactive": "互动功能",
     "logout": "登出"
   },
   "pageTitles": {
