@@ -25,6 +25,8 @@ import Sidebar, { drawerWidth } from './Sidebar.jsx'
 import { useColorMode } from '../ColorModeContext.jsx'
 import NotificationPanel from './NotificationPanel.jsx'
 import { languages } from '../i18n/i18n.js'
+import { useAuth } from '../contexts/AuthContext.jsx'
+import { FaUserTie, FaStore } from 'react-icons/fa6'
 
 const pathToKey = {
   '/home': 'home',
@@ -48,6 +50,8 @@ function AppShell({ children }) {
   const { mode, toggleColorMode } = useColorMode()
   const isDark = mode === 'dark'
   const { t, i18n } = useTranslation()
+  const { user } = useAuth()
+  const isManager = user?.role === 'manager' || user?.role === 'admin'
 
   const pageTitle = useMemo(() => {
     const key = pathToKey[location.pathname] || 'home'
@@ -134,6 +138,29 @@ function AppShell({ children }) {
                 }}
               />
             }
+          />
+
+          {/* Role Badge */}
+          <Chip
+            icon={
+              <Box sx={{ display: 'flex', alignItems: 'center', pl: 0.8 }}>
+                {isManager ? <FaUserTie size={11} /> : <FaStore size={11} />}
+              </Box>
+            }
+            label={isManager ? 'Manager' : 'SME User'}
+            size="small"
+            sx={{
+              bgcolor: isManager ? 'rgba(20,184,166,0.12)' : 'rgba(99,102,241,0.12)',
+              color: isManager ? '#14b8a6' : '#6366f1',
+              fontWeight: 700,
+              fontSize: '0.65rem',
+              letterSpacing: '0.05em',
+              height: 24,
+              border: `1px solid ${isManager ? 'rgba(20,184,166,0.3)' : 'rgba(99,102,241,0.3)'}`,
+              '& .MuiChip-label': { px: 0.8 },
+              '& .MuiChip-icon': { color: isManager ? '#14b8a6' : '#6366f1' },
+              display: { xs: 'none', sm: 'flex' },
+            }}
           />
 
           <NotificationPanel />
