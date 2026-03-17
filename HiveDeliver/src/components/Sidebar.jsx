@@ -11,7 +11,7 @@ import {
   Divider,
   Button,
 } from '@mui/material'
-import { HiCubeTransparent, HiMap, HiChartBarSquare, HiCpuChip } from 'react-icons/hi2'
+import { HiCubeTransparent, HiMap, HiChartBarSquare, HiCpuChip, HiChatBubbleLeftRight } from 'react-icons/hi2'
 import { FaHouse, FaClipboardList, FaLocationDot, FaLock, FaRoute, FaMicrophone } from 'react-icons/fa6'
 import { GiDeliveryDrone } from 'react-icons/gi'
 import { MdHistory, MdLogout, MdNotificationsNone } from 'react-icons/md'
@@ -33,6 +33,7 @@ const allNavItems = [
   { key: 'security', label: 'Security & Blockchain', path: '/security', icon: <FaLock />, roles: ['admin', 'manager'] },
   { key: 'optimization', label: 'Swarm Optimization', path: '/optimization', icon: <FaRoute />, roles: ['manager'] },
   { key: 'interactive', label: 'Interactive Features', path: '/interactive', icon: <FaMicrophone />, roles: ['manager'] },
+  { key: 'support', label: 'AI Chat Support', path: '/support', icon: <HiChatBubbleLeftRight />, roles: ['admin', 'manager', 'user'] },
 ]
 
 function Sidebar({ onNavigate }) {
