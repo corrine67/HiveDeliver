@@ -419,7 +419,24 @@
     "noAccount": "没有账户？",
     "createOne": "在此创建",
     "registrationSuccess": "账户创建成功。请使用新凭据登录。",
-    "errorSignIn": "无法登录，请检查您的凭据。"
+    "errorSignIn": "无法登录，请检查您的凭据。",
+    "lockedError": "账户已锁定。请等待 {{time}}。",
+    "captchaRequired": "请先完成安全验证。",
+    "tooManyAttempts": "失败尝试次数过多。账户已锁定 5 分钟。",
+    "attemptsRemaining": "{{message}}（还剩 {{count}} 次尝试）",
+    "lockedTitle": "账户暂时锁定",
+    "lockedMessage": "登录失败次数过多。请稍后再试，剩余时间：",
+    "attemptsWarning": "在被锁定前还剩 {{count}} 次登录尝试。",
+    "captchaVerified": "✅ 验证成功 — 我不是机器人",
+    "notRobot": "我不是机器人",
+    "captchaChallenge": "🧮 安全挑战：{{question}}",
+    "captchaPlaceholder": "您的答案",
+    "captchaWrong": "答案错误，请重试。",
+    "captchaVerifyBtn": "验证",
+    "lockedBtn": "🔒 已锁定 ({{time}})",
+    "securityTitle": "🔐 安全功能已激活",
+    "securityPoint1": "• {{count}} 次失败尝试后账户锁定 (5分钟)",
+    "securityPoint2": "• 每次登录都需要完成 CAPTCHA 验证"
   },
   "register": {
     "title": "创建您的 HiveDeliver 账户",
@@ -548,6 +565,18 @@
     "voiceCommandDetected": "检测到语音指令",
     "voiceCommandPrompt": "系统检测到以下指令。点击执行以继续。",
     "cancel": "取消",
-    "executeCommand": "执行指令"
+    "executeCommand": "执行指令",
+    "browserNotSupported": "您的浏览器不支持 Web Speech API。请使用 Chrome 或 Edge 以支持语音指令。",
+    "micDenied": "麦克风访问被拒绝。请在浏览器设置中允许麦克风权限，然后重试。",
+    "stopListening": "停止监听",
+    "startListening": "🎤 开始监听",
+    "ready": "就绪",
+    "commandNotRecognized": "无法识别指令",
+    "heard": "听到",
+    "tryHint": "尝试说：“将无人机 H1 分配给包裹 P102”或“H3 的电池状态”",
+    "commandHistory": "指令历史",
+    "executed": "已执行",
+    "failed": "失败",
+    "conf": "置信度"
   }
 }
