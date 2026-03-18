@@ -598,7 +598,8 @@
     "cancelConfirmTitle": "Batalkan pesanan ini?",
     "cancelConfirmMsg": "Ini akan membuang pesanan dan memanggil semula dron. Tindakan ini tidak boleh dibuat asal.",
     "confirmCancel": "Ya, Batalkan",
-    "keepOrder": "Simpan Pesanan"
+    "keepOrder": "Simpan Pesanan",
+    "cancel": "Batal"
   },
   "parcelProof": {
     "title": "Bukti Bungkusan",
@@ -618,6 +619,7 @@
     "timestamp": "Cap Masa",
     "gps": "GPS",
     "note": "Nota",
-    "close": "Tutup"
+    "close": "Tutup",
+    "all": "Semua"
   }
 }
