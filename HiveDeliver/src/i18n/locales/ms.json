@@ -419,7 +419,24 @@
     "noAccount": "Tiada akaun?",
     "createOne": "Cipta satu di sini",
     "registrationSuccess": "Akaun berjaya dicipta. Sila log masuk dengan kelayakan baharu anda.",
-    "errorSignIn": "Tidak dapat log masuk. Sila semak kelayakan anda."
+    "errorSignIn": "Tidak dapat log masuk. Sila semak kelayakan anda.",
+    "lockedError": "Akaun dikunci. Sila tunggu {{time}}.",
+    "captchaRequired": "Sila lengkapkan pengesahan keselamatan terlebih dahulu.",
+    "tooManyAttempts": "Terlalu banyak percubaan gagal. Akaun dikunci selama 5 minit.",
+    "attemptsRemaining": "{{message}} (Tinggal {{count}} percubaan)",
+    "lockedTitle": "Akaun Dikunci Sementara",
+    "lockedMessage": "Terlalu banyak percubaan log masuk gagal. Cuba lagi dalam",
+    "attemptsWarning": "Tinggal {{count}} percubaan log masuk sebelum dikunci.",
+    "captchaVerified": "✅ Disahkan — Saya bukan robot",
+    "notRobot": "Saya bukan robot",
+    "captchaChallenge": "🧮 Cabaran Keselamatan: {{question}}",
+    "captchaPlaceholder": "Jawapan anda",
+    "captchaWrong": "Jawapan salah. Cuba lagi.",
+    "captchaVerifyBtn": "Sahkan",
+    "lockedBtn": "🔒 Dikunci ({{time}})",
+    "securityTitle": "🔐 Ciri Keselamatan Aktif",
+    "securityPoint1": "• Akaun dikunci selepas {{count}} percubaan gagal (5 min)",
+    "securityPoint2": "• Pengesahan CAPTCHA diperlukan setiap kali log masuk"
   },
   "register": {
     "title": "Cipta akaun HiveDeliver anda",
@@ -548,6 +565,18 @@
     "voiceCommandDetected": "Arahan Suara Dikesan",
     "voiceCommandPrompt": "Sistem mengesan arahan berikut. Klik Laksana untuk meneruskan.",
     "cancel": "Batal",
-    "executeCommand": "Laksana Arahan"
+    "executeCommand": "Laksana Arahan",
+    "browserNotSupported": "Pelayar anda tidak menyokong Web Speech API. Sila gunakan Chrome atau Edge untuk arahan suara.",
+    "micDenied": "Akses mikrofon ditolak. Sila benarkan kebenaran mikrofon dalam tetapan pelayar anda dan cuba lagi.",
+    "stopListening": "Berhenti Mendengar",
+    "startListening": "🎤 Mula Mendengar",
+    "ready": "Sedia",
+    "commandNotRecognized": "Arahan tidak dikenali",
+    "heard": "Didengar",
+    "tryHint": "Cuba: \"Tugaskan Dron H1 ke Bungkusan P102\" atau \"Status bateri untuk H3\"",
+    "commandHistory": "Sejarah Arahan",
+    "executed": "Dilaksana",
+    "failed": "Gagal",
+    "conf": "yakin."
   }
 }
