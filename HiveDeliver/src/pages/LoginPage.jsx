@@ -30,8 +30,8 @@ export default function LoginPage() {
     }
   }, [defaultRoute, navigate, user])
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState(location.state?.prefillEmail ?? '')
+  const [password, setPassword] = useState(location.state?.prefillPassword ?? '')
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
 
