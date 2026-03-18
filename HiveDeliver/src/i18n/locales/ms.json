@@ -25,7 +25,9 @@
     "security": "Keselamatan & Blockchain",
     "optimization": "Pengoptimuman Kawanan",
     "interactive": "Ciri Interaktif",
-    "logout": "Daftar Keluar"
+    "logout": "Daftar Keluar",
+    "activeOrders": "Pesanan Aktif",
+    "parcelProof": "Bukti Bungkusan"
   },
   "pageTitles": {
     "home": "Platform HiveDeliver",
@@ -578,5 +580,44 @@
     "executed": "Dilaksana",
     "failed": "Gagal",
     "conf": "yakin."
+  },
+  "activeOrders": {
+    "title": "Pesanan Aktif",
+    "subtitle": "Pantau penghantaran yang sedang dihantar dan dalam penerbangan",
+    "noOrders": "Tiada pesanan aktif",
+    "noOrdersHint": "Penghantaran yang sedang diproses akan muncul di sini",
+    "statusDispatched": "Dihantar",
+    "statusInFlight": "Dalam Penerbangan",
+    "statusLanding": "Mendarat",
+    "statusArrived": "Tiba",
+    "eta": "Anggaran Masa",
+    "mins": "minit",
+    "drone": "Dron",
+    "battery": "Bateri",
+    "cancelOrder": "Batal Pesanan",
+    "cancelConfirmTitle": "Batalkan pesanan ini?",
+    "cancelConfirmMsg": "Ini akan membuang pesanan dan memanggil semula dron. Tindakan ini tidak boleh dibuat asal.",
+    "confirmCancel": "Ya, Batalkan",
+    "keepOrder": "Simpan Pesanan"
+  },
+  "parcelProof": {
+    "title": "Bukti Bungkusan",
+    "subtitle": "Lihat gambar penghantaran, rekod GPS, dan muat turun resit",
+    "tabAll": "Semua",
+    "tabDelivered": "Dihantar",
+    "tabFailed": "Gagal",
+    "noProofs": "Tiada rekod penghantaran ditemui",
+    "noProofsHint": "Penghantaran selesai dengan bukti foto akan muncul di sini",
+    "delivered": "Dihantar",
+    "failed": "Gagal",
+    "downloadReceipt": "Muat Turun E-Resit",
+    "viewProof": "Lihat Bukti",
+    "recipient": "Penerima",
+    "address": "Alamat",
+    "drone": "Dron",
+    "timestamp": "Cap Masa",
+    "gps": "GPS",
+    "note": "Nota",
+    "close": "Tutup"
   }
 }
